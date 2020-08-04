@@ -1,6 +1,6 @@
 ## 思路与原理
 
-利用vercel,netlify,leancloud,heroku,cloudflare workers等平台
+利用vercel,leancloud,heroku,cloudflare workers等平台
 
 让静态博客可以实现动态博客一样的搜索体验
 
@@ -10,25 +10,37 @@
 
 每次搜索都要加载较长时间,并且浪费了巨大的流量,用户只需要搜索的结果,却需要加载全部的数据
 
-那么,我们是否可以在服务端搜索后再返回呢? 不错的想法
+那么,我们是否可以在服务端搜索后再返回呢? 嗯,不错的想法
 
 ~~通过白嫖各大云平台,可以轻松实现我们的目的~~
 
 ## 使用
 
+请先查看[数据格式](#数据格式)
+
 ### vercel
 
 fork本仓库,将index.js中第一行的`file`修改为你的搜索数据文件地址,
 
-再从vercel导入部署该仓库后即可访问
+再在vercel导入github仓库部署后即可访问
 
 ### leancloud
 
-通过leancloud云引擎部署
+通过leancloud云引擎部署,通过git部署即可
 
 国内版需绑定备案域名才能访问
 
 国际版可以直接访问
+
+### cloudflare worker
+
+复制`cf worker/index.js`中代码,修改必要信息,粘贴到worker编辑界面脚本中,保存并部署即可
+
+### heroku
+
+fork本仓库,将index.js中第一行的`file`修改为你的搜索数据文件地址,
+
+再在heroku选择从github部署
 
 ### 数据格式
 
@@ -64,7 +76,9 @@ fork本仓库,将index.js中第一行的`file`修改为你的搜索数据文件�
 ]
 ```
 
-前端使用示例(以[我的博客](https://blog.zcmimi.top)为例):
+### 前端使用例
+
+以[我的博客](https://blog.zcmimi.top)为例:
 
 ```html
 <div class="mdui-progress" id='loading-progress' style="position: fixed;top:0;z-index: 999999;"><div class="mdui-progress-indeterminate"></div></div>
@@ -117,3 +131,15 @@ function search(api){ //接口地址
     xhr.send();
 }
 ```
+
+### 服务器使用
+
+```shell
+git clone https://github.com/zcmimi/blog-search.git
+cd blog-search
+nano index.js
+npm install
+npm start
+```
+
+~~既然有服务器了,那就用动态博客嘛~~
