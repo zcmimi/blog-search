@@ -16,13 +16,21 @@
 
 ## 使用
 
-请先查看[数据格式](#数据格式)
+请查看[数据格式](#数据格式)
+
+请fork本仓库,
+
+修改`index.js`中第一行的`file`为你的搜索数据文件地址,
+
+根据需要调整预览长度(`preview_len`)
+
+可以根据需要二次修改代码
 
 ### vercel
 
-fork本仓库,将index.js中第一行的`file`修改为你的搜索数据文件地址,
+已配置好了`now.json`,无需再配置
 
-再在vercel导入github仓库部署后即可访问
+在vercel导入github仓库部署后即可访问
 
 ### leancloud
 
@@ -38,9 +46,7 @@ fork本仓库,将index.js中第一行的`file`修改为你的搜索数据文件�
 
 ### heroku
 
-fork本仓库,将index.js中第一行的`file`修改为你的搜索数据文件地址,
-
-再在heroku选择从github部署
+在heroku选择从github部署即可
 
 ---
 
@@ -76,7 +82,11 @@ fork本仓库,将index.js中第一行的`file`修改为你的搜索数据文件�
 ]
 ```
 
-将会得到以下格式的json结果:
+将会用关键词匹配文章的标题->标签->分类->内容,
+
+返回匹配成功所有文章的链接、标题、预览
+
+得到以下格式的json结果:
 
 ```json
 [
@@ -89,7 +99,17 @@ fork本仓库,将index.js中第一行的`file`修改为你的搜索数据文件�
 ]
 ```
 
-### 前端使用例
+### 前端使用
+
+```
+usage:
+?keyword=<keyword>&typ=<typ>
+required: keyword
+```
+
+其中`keyword`为搜索关键词,typ为模式(默认为完全匹配,typ=0)
+
+typ=1时,为包含匹配,按顺序出现过该关键词即可(be**li**e**ve**[live])
 
 以[我的博客](https://blog.zcmimi.top)为例:
 
