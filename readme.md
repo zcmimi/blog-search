@@ -42,6 +42,19 @@ fork本仓库,将index.js中第一行的`file`修改为你的搜索数据文件�
 
 再在heroku选择从github部署
 
+---
+
+以上方法亲测有效,可以看看速度选择要那种(推荐vercel):
+
+[blog-search.vercel.app](https://blog-search.vercel.app
+)
+
+[blog-search.avosapps.us](https://blog-search.avosapps.us)
+
+[blog-search.zcmimi.workers.dev](https://blog-search.zcmimi.workers.dev/)
+
+[zcmimiblogsearch.herokuapp.com](https://zcmimiblogsearch.herokuapp.com/)
+
 ### 数据格式
 
 请将文章数据整合成以下格式的json文件
