@@ -1,18 +1,12 @@
 const file='https://blog.zcmimi.top/pure_data.json', // json数据文件位置
+    origin='blog.zcmimi.top',
     preview_len=70; // 预览字数
 const fetch=require('node-fetch'),
-    fs=require('fs'),
     schedule=require('node-schedule');
+var data;
 async function getData(){
-    await fetch(file,{
-        method:'GET',
-        headers:{'Content-Type':'application/octet-stream'},
-    }).then(res=>res.buffer()).then(data=>{
-        fs.writeFile("./data.json",data,"binary",(err)=>{
-            if(err)console.error(err);
-            else console.log("updated");
-        });
-    })
+    await fetch(file).then(res=>res.json()).then(res=>data=res);
+    console.log('UPDATED');
 }
 function chk(content,text,typ=0){
     content=content.toLowerCase();
@@ -27,8 +21,8 @@ function chk(content,text,typ=0){
 async function search(text,typ=0){
     console.log('SEARCH',text);
     text=text.toLowerCase();
-    if(!fs.existsSync('./data.json'))await getData();
-    var res=[],data=require('./data.json');
+    if(!data)await getData();
+    var res=[];
     for(var node of data){
         var f=chk(node.title,text,typ);
         if(!f)
@@ -51,10 +45,8 @@ const express=require('express'),app=express(),url=require('url');
 app.get('/',async(req,res)=>{
     res.status(200);
     res.set({
-        'Access-Control-Allow-Credentials': true,
-        'Access-Control-Allow-Origin': req.headers.origin || '*',
-        'Access-Control-Allow-Headers': 'X-Requested-With,Content-Type',
-        'Access-Control-Allow-Methods': 'PUT,POST,GET,DELETE,OPTIONS',
+        'Access-Control-Allow-Origin': origin,
+        'Access-Control-Allow-Methods':'POST,GET',
         'Content-Type': 'application/json; charset=utf-8'
     });
     var realurl=decodeURI(req.url);
@@ -68,12 +60,12 @@ app.get('/',async(req,res)=>{
     res.send(ans);
 })
 
+var hassh;
 app.get('/update',async(req,res)=>{
-    await getData();
-    res.send('UPDATED');
+    getData();
+    res.send('success');
+    if(!hassh)hassh=schedule.scheduleJob('*/30 * * * * *',getData);
 })
-// getData();
-// schedule.scheduleJob('*/1 * * * *',getData);
 
 app.server=app.listen(port,host,()=>{
     console.log(`server running @ http://${host?host:'localhost'}:${port}`);
