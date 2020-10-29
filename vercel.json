@@ -9,7 +9,7 @@
     ],
     "routes": [{
         "headers":{
-            "Access-Control-Allow-Origin":"*",
+            "Access-Control-Allow-Origin":"https://blog.zcmimi.top",
             "Access-Control-Allow-Methods":"GET, POST"
         },
         "src": "/(.*)",
