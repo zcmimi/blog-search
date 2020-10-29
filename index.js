@@ -1,15 +1,8 @@
 const file='https://blog.zcmimi.top/pure_data.json', // json数据文件位置
-    preview_len=50; // 预览字数
-const fetch=require('node-fetch');
-var data,lastget=0;
-async function getdata(){
-    console.log("updating data");
-    lastget=new Date().getDate();
-    await fetch(file).
-        then(res=>res.json()).
-        then(json=>data=json);
-    console.log("updated data");
-}
+    preview_len=70; // 预览字数
+const fetch=require('node-fetch'),
+    schedule=require('node-schedule');
+var data;
 function chk(content,text,typ=0){
     content=content.toLowerCase();
     if(typ==0)return content.indexOf(text)!=-1;
@@ -22,8 +15,6 @@ function chk(content,text,typ=0){
 }
 async function search(text,typ=0){
     text=text.toLowerCase();
-    if(!lastget||new Date().getDate()!=lastget)
-        await getdata();
     var res=[];
     for(i in data){
         var f=0;
@@ -49,7 +40,7 @@ async function search(text,typ=0){
 const port=process.env.PORT||3000,host=process.env.HOST||'';
 const express=require('express'),app=express(),url=require('url');
 
-app.get('/',async function(req,res){
+app.get('/',async(req,res)=>{
     res.status(200);
     res.set({
         'Access-Control-Allow-Credentials': true,
@@ -69,6 +60,12 @@ app.get('/',async function(req,res){
     res.send(ans);
 })
 
+function getData(){
+    fetch(file).then(res=>res.json()).then(json=>{data=json});
+}
+getData();
+schedule.scheduleJob('*/1 * * * *',getData);
+
 app.server=app.listen(port,host,()=>{
-    console.log(`server running @ http://${host ? host : 'localhost'}:${port}`);
+    console.log(`server running @ http://${host?host:'localhost'}:${port}`);
 });
