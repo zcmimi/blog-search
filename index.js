@@ -1,8 +1,19 @@
 const file='https://blog.zcmimi.top/pure_data.json', // json数据文件位置
     preview_len=70; // 预览字数
 const fetch=require('node-fetch'),
+    fs=require('fs'),
     schedule=require('node-schedule');
-var data;
+async function getData(){
+    await fetch(file,{
+        method:'GET',
+        headers:{'Content-Type':'application/octet-stream'},
+    }).then(res=>res.buffer()).then(data=>{
+        fs.writeFile("./data.json",data,"binary",(err)=>{
+            if(err)console.error(err);
+            else console.log("updated");
+        });
+    })
+}
 function chk(content,text,typ=0){
     content=content.toLowerCase();
     if(typ==0)return content.indexOf(text)!=-1;
@@ -14,24 +25,21 @@ function chk(content,text,typ=0){
     return 0;
 }
 async function search(text,typ=0){
+    console.log('SEARCH',text);
     text=text.toLowerCase();
-    var res=[];
-    for(i in data){
-        var f=0;
-        if(chk(data[i].title,text,typ))f=1;
-        else for(j in data[i].tags)
-            if(chk(data[i].tags[j],text,typ)){
-                f=1;
-                break;
-            }
-        else for(j in data[i].categories)
-            for(k in data[i].categories[j])
-                if(chk(data[i].categories[j][k],text,typ)){
-                    f=1;
-                    break;
-                }
-        else if(chk(data[i].content,text,typ))f=1;
-        if(f)res.push([data[i].link,data[i].title,data[i].content.substring(0,preview_len)]);
+    if(!fs.existsSync('./data.json'))await getData();
+    var res=[],data=require('./data.json');
+    for(var node of data){
+        var f=chk(node.title,text,typ);
+        if(!f)
+        for(var tag of node.tags)
+            if(chk(tag,text,typ)){f=1;break;} 
+        if(!f)
+        for(var categorie of node.categories)
+            for(var k of categorie)
+                if(chk(k,text,typ)){f=1;break;}
+        else if(chk(node.content,text,typ))f=1;
+        if(f)res.push([node.link,node.title,node.content.substring(0,preview_len)]);
     }
     return JSON.stringify(res);
 }
@@ -60,11 +68,12 @@ app.get('/',async(req,res)=>{
     res.send(ans);
 })
 
-function getData(){
-    fetch(file).then(res=>res.json()).then(json=>{data=json});
-}
-getData();
-schedule.scheduleJob('*/1 * * * *',getData);
+app.get('/update',async(req,res)=>{
+    await getData();
+    res.send('UPDATED');
+})
+// getData();
+// schedule.scheduleJob('*/1 * * * *',getData);
 
 app.server=app.listen(port,host,()=>{
     console.log(`server running @ http://${host?host:'localhost'}:${port}`);
