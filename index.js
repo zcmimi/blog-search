@@ -43,12 +43,7 @@ const port=process.env.PORT||3000,host=process.env.HOST||'';
 const express=require('express'),app=express(),url=require('url');
 
 app.get('/',async(req,res)=>{
-    res.status(200);
-    res.set({
-        'Access-Control-Allow-Origin': origin,
-        'Access-Control-Allow-Methods':'POST,GET',
-        'Content-Type': 'application/json; charset=utf-8'
-    });
+    console.log(req.headers.origin);
     var realurl=decodeURI(req.url);
     if(realurl.indexOf("keyword=")==-1||realurl.indexOf("?")==-1){
         res.send("usage:\n?keyword=<keyword>&typ=<typ>\nrequired: keyword");
